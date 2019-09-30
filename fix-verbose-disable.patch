@@ -1,0 +1,28 @@
+From c220e0ceae7f8192ab94b4c9eb89e5384277e175 Mon Sep 17 00:00:00 2001
+From: pengyeqing <pengyeqing@huawei.com>
+Date: Sat, 26 Jan 2019 03:24:48 +0800
+Subject: [PATCH] gzip: fix verbose disable
+
+reason:fix verbose disable
+
+Signed-off-by: pengyeqing <pengyeqing@huawei.com>
+---
+ zdiff.in | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/zdiff.in b/zdiff.in
+index 960bf86..e337e35 100644
+--- a/zdiff.in
++++ b/zdiff.in
+@@ -51,7 +51,7 @@ escape='
+ while :; do
+   case $1 in
+   --h*) printf '%s\n' "$usage"   || exit 2; exit;;
+-  --v*) printf '%s\n' "$version" || exit 2; exit;;
++  --version) printf '%s\n' "$version" || exit 2; exit;;
+   --) shift; break;;
+   -*\'*) cmp="$cmp '"`printf '%sX\n' "$1" | sed "$escape"`;;
+   -?*) cmp="$cmp '$1'";;
+--
+1.8.3.1
+

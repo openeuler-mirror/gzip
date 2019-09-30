@@ -1,0 +1,37 @@
+From 26c140cf5377585d38d2a13a949e109724d4d406 Mon Sep 17 00:00:00 2001
+From: Paul Eggert <eggert@cs.ucla.edu>
+Date: Fri, 30 Nov 2018 13:00:42 -0800
+Subject: [PATCH 11/23] gzip: fix use of uninitialized memory
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Problem reported by Hanno Böck (Bug#33501).
+* NEWS: Mention this.
+* inflate.c (inflate_dynamic): Return if code is invalid.
+Fix by Mark Adler.
+* tests/hufts: Add test case for the bug.
+---
+ inflate.c   | 6 ++++++
+ 1 files changed, 6 insertions(+), 0 deletion(-)
+
+diff --git a/inflate.c b/inflate.c
+index d372685..bcafcf1 100644
+--- a/inflate.c
++++ b/inflate.c
+@@ -799,6 +799,12 @@ inflate_dynamic(void)
+     NEEDBITS((unsigned)bl)
+     j = (td = tl + ((unsigned)b & m))->b;
+     DUMPBITS(j)
++    if (td->e == 99)
++      {
++        /* Invalid code.  */
++        huft_free (tl);
++        return 2;
++      }
+     j = td->v.n;
+     if (j < 16)                 /* length of code in bits (0..15) */
+       ll[i++] = l = j;          /* save last length in l */
+-- 
+1.8.3.1
+
