@@ -1,0 +1,170 @@
+From 134712c35ed2ec5a06c61583dce59867aeb28862 Mon Sep 17 00:00:00 2001
+From: liqiang64 <liqiang64@huawei.com>
+Date: Mon, 11 Nov 2019 19:47:36 +0800
+Subject: [PATCH] performance-neoncrc32-and-prfm
+
+Analysis of gzip software by perf tool, found that crc32 and
+longest_match hotspots are very high.
+
+On the ARM architecture, we can optimize the efficiency of
+crc32 through the interface provided by the neon instruction
+set, and optimize the performance of random access code through
+prefetch instructions.
+Modify by Li Qiang.
+---
+ deflate.c | 27 ++++++++++++++++++++++++++-
+ util.c    | 49 +++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 75 insertions(+), 1 deletion(-)
+
+diff --git a/deflate.c b/deflate.c
+index 951d7af..f15a227 100644
+--- a/deflate.c
++++ b/deflate.c
+@@ -392,6 +392,9 @@ longest_match(IPos cur_match)
+     register int len;                           /* length of current match */
+     int best_len = prev_length;                 /* best match length so far */
+     IPos limit = strstart > (IPos)MAX_DIST ? strstart - (IPos)MAX_DIST : NIL;
++    #ifdef __aarch64__
++    IPos next_match;
++    #endif
+     /* Stop when cur_match becomes <= limit. To simplify the code,
+      * we prevent matches with the string of window index 0.
+      */
+@@ -425,6 +428,10 @@ longest_match(IPos cur_match)
+     do {
+         Assert(cur_match < strstart, "no future");
+         match = window + cur_match;
++        #ifdef __aarch64__
++        next_match = prev[cur_match & WMASK];
++        __asm__("PRFM PLDL1STRM, [%0]"::"r"(&(prev[next_match & WMASK])));
++        #endif
+ 
+         /* Skip to next match if the match length cannot increase
+          * or if the match length is less than 2:
+@@ -502,8 +509,14 @@ longest_match(IPos cur_match)
+             scan_end   = scan[best_len];
+ #endif
+         }
+-    } while ((cur_match = prev[cur_match & WMASK]) > limit
++    } 
++    #ifdef __aarch64__
++    while ((cur_match = next_match) > limit
+              && --chain_length != 0);
++    #else
++    while ((cur_match = prev[cur_match & WMASK]) > limit
++             && --chain_length != 0);
++    #endif
+ 
+     return best_len;
+ }
+@@ -788,7 +801,19 @@ off_t deflate()
+             lookahead -= prev_length-1;
+             prev_length -= 2;
+             RSYNC_ROLL(strstart, prev_length+1);
++            while (prev_length >= 4) {
++                prev_length -= 4;
++                strstart++;
++                INSERT_STRING(strstart, hash_head);
++                strstart++;
++                INSERT_STRING(strstart, hash_head);
++                strstart++;
++                INSERT_STRING(strstart, hash_head);
++                strstart++;
++                INSERT_STRING(strstart, hash_head);
++            }
+             do {
++                if (prev_length == 0) break;
+                 strstart++;
+                 INSERT_STRING(strstart, hash_head);
+                 /* strstart never exceeds WSIZE-MAX_MATCH, so there are
+diff --git a/util.c b/util.c
+index bb5e9f3..d0b3cb0 100644
+--- a/util.c
++++ b/util.c
+@@ -31,6 +31,9 @@
+ #include "gzip.h"
+ #include <dirname.h>
+ #include <xalloc.h>
++#ifdef __aarch64__
++#include <arm_acle.h>
++#endif
+ 
+ #ifndef CHAR_BIT
+ #  define CHAR_BIT 8
+@@ -41,6 +44,7 @@ static int write_buffer (int, voidp, unsigned int);
+ /* ========================================================================
+  * Table of CRC-32's of all single-byte values (made by makecrc.c)
+  */
++#ifndef __aarch64__
+ static const ulg crc_32_tab[] = {
+   0x00000000L, 0x77073096L, 0xee0e612cL, 0x990951baL, 0x076dc419L,
+   0x706af48fL, 0xe963a535L, 0x9e6495a3L, 0x0edb8832L, 0x79dcb8a4L,
+@@ -95,6 +99,7 @@ static const ulg crc_32_tab[] = {
+   0x5d681b02L, 0x2a6f2b94L, 0xb40bbe37L, 0xc30c8ea1L, 0x5a05df1bL,
+   0x2d02ef8dL
+ };
++#endif
+ 
+ /* ===========================================================================
+  * Copy input to output unchanged: zcat == cat with --force.
+@@ -129,6 +134,49 @@ ulg updcrc(s, n)
+     uch *s;                 /* pointer to bytes to pump through */
+     unsigned n;             /* number of bytes in s[] */
+ {
++    #ifdef __aarch64__
++    register ulg c;
++    static ulg crc = (ulg)0xffffffffL;
++    register const uint8_t  *buf1;
++    register const uint16_t *buf2;
++    register const uint32_t *buf4;
++    register const uint64_t *buf8;
++    int64_t length = (int64_t)n;
++    buf8 = (const  uint64_t *)(const void *)s;
++
++    if (s == NULL) {
++        c = 0xffffffffL;
++    } else {
++        c = crc;
++	
++    	while(length >= sizeof(uint64_t)) {
++    		c = __crc32d(c, *buf8++);
++    		length -= sizeof(uint64_t);
++    	}
++
++    	buf4 = (const uint32_t *)(const void *)buf8;
++    	if (length >= sizeof(uint32_t)) {
++    		c = __crc32w(c, *buf4++);
++    		length -= sizeof(uint32_t);
++    	}
++
++    	buf2 = (const uint16_t *)(const void *)buf4;
++    	if(length >= sizeof(uint16_t)) {
++    		c = __crc32h(c, *buf2++);
++    		length -= sizeof(uint16_t);
++    	}
++
++    	buf1 = (const uint8_t *)(const void *)buf2;
++    	if (length >= sizeof(uint8_t)) {
++    		c = __crc32b(c, *buf1);
++    		length -= sizeof(uint8_t);
++    	}
++    }
++
++	crc = c;
++
++    return (c ^ 0xffffffffL);
++#else
+     register ulg c;         /* temporary variable */
+ 
+     static ulg crc = (ulg)0xffffffffL; /* shift register contents */
+@@ -143,6 +191,7 @@ ulg updcrc(s, n)
+     }
+     crc = c;
+     return c ^ 0xffffffffL;       /* (instead of ~c for 64-bit machines) */
++#endif
+ }
+ 
+ /* ===========================================================================
+-- 
+1.8.3.1
+
