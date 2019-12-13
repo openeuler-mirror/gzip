@@ -1,6 +1,6 @@
 Name:           gzip
 Version:        1.9
-Release:        16
+Release:        17
 Summary:        A data compression utility
 
 License:        GPLv3+ and GFDL
@@ -13,6 +13,7 @@ Patch0:         gnulib.patch
 Patch1:         gzip-fix-use-of-uninitialized-memory.patch
 Patch2:         gzexe.patch
 Patch9000:      fix-verbose-disable.patch
+Patch9100:      performance-neoncrc32-and-prfm.patch
 
 BuildRequires:  gcc texinfo
 Requires:       coreutils
@@ -33,6 +34,9 @@ has the suffix .gz.
 %autosetup -n %{name}-%{version} -p1
 
 %build
+%ifarch aarch64
+export CFLAGS="${CFLAGS:-%optflags} -march=armv8-a+crc"
+%endif
 %configure
 %make_build
 
@@ -62,6 +66,12 @@ make check
 %{_mandir}/man1/*
 
 %changelog
+* Mon Nov 11 2019 liqiang<liqiang64@huawei.com> - 1.9-17
+- Type:performance improve
+- ID:NA
+- SUG:NA
+- DESC:use neon crc32 api and PRFM instruction to improve performance.
+
 * Mon Sep 30 2019 shenyangyang<shenyangyang4@huawei.com> - 1.9-16
 - Type:enhancement
 - ID:NA
