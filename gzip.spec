@@ -1,13 +1,11 @@
 Name:           gzip
 Version:        1.9
-Release:        17
+Release:        18
 Summary:        A data compression utility
 
 License:        GPLv3+ and GFDL
 URL:            https://www.gnu.org/software/gzip
 Source0:        https://ftp.gnu.org/gnu/gzip/gzip-%{version}.tar.xz
-Source1:        colorzgrep.csh
-Source2:        colorzgrep.sh
 
 Patch0:         gnulib.patch
 Patch1:         gzip-fix-use-of-uninitialized-memory.patch
@@ -43,9 +41,6 @@ export CFLAGS="${CFLAGS:-%optflags} -march=armv8-a+crc"
 %install
 rm -rf %RPM_BUILD_ROOT
 %make_install
-mkdir -p %{buildroot}%{_sysconfdir}/profile.d
-install -m 0644 %{SOURCE1} %{buildroot}%{_sysconfdir}/profile.d
-install -m 0644 %{SOURCE2} %{buildroot}%{_sysconfdir}/profile.d
 # ncompress provides uncompress, may cause conflict.
 rm -f %{buildroot}%{_bindir}/uncompress
 
@@ -57,7 +52,6 @@ make check
 %doc AUTHORS ChangeLog README
 %license COPYING
 %{_bindir}/*
-%{_sysconfdir}/profile.d/*
 %exclude %{_infodir}/dir
 
 %files help
@@ -66,6 +60,12 @@ make check
 %{_mandir}/man1/*
 
 %changelog
+* Fri Jan 17 2020 openEuler Buildteam <buildteam@openeuler.org> - 1.9-18
+- Type:performance improve
+- ID:NA
+- SUG:NA
+- DESC:delete useless scripts for grep
+
 * Mon Nov 11 2019 liqiang<liqiang64@huawei.com> - 1.9-17
 - Type:performance improve
 - ID:NA
