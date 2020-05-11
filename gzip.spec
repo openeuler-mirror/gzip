@@ -1,15 +1,13 @@
 Name:           gzip
-Version:        1.9
-Release:        18
+Version:        1.10
+Release:        1
 Summary:        A data compression utility
 
 License:        GPLv3+ and GFDL
 URL:            https://www.gnu.org/software/gzip
 Source0:        https://ftp.gnu.org/gnu/gzip/gzip-%{version}.tar.xz
 
-Patch0:         gnulib.patch
-Patch1:         gzip-fix-use-of-uninitialized-memory.patch
-Patch2:         gzexe.patch
+Patch0:         gzexe.patch
 Patch9000:      fix-verbose-disable.patch
 Patch9100:      performance-neoncrc32-and-prfm.patch
 
@@ -60,6 +58,9 @@ make check
 %{_mandir}/man1/*
 
 %changelog
+* Fri Apr 24 2020 BruceGW <gyl93216@163.com> - 1.10-1
+* update upstream to 1.10
+
 * Fri Jan 17 2020 openEuler Buildteam <buildteam@openeuler.org> - 1.9-18
 - Type:performance improve
 - ID:NA
