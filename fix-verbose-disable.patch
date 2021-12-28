@@ -11,7 +11,7 @@ Signed-off-by: pengyeqing <pengyeqing@huawei.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/zdiff.in b/zdiff.in
-index 960bf86..e337e35 100644
+index a1325f2..2b7ec23 100644
 --- a/zdiff.in
 +++ b/zdiff.in
 @@ -51,7 +51,7 @@ escape='
@@ -23,6 +23,6 @@ index 960bf86..e337e35 100644
    --) shift; break;;
    -*\'*) cmp="$cmp '"`printf '%sX\n' "$1" | sed "$escape"`;;
    -?*) cmp="$cmp '$1'";;
---
-1.8.3.1
+-- 
+2.27.0
 
