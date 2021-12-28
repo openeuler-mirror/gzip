@@ -1,13 +1,12 @@
 Name:           gzip
-Version:        1.10
-Release:        2
+Version:        1.11
+Release:        1
 Summary:        A data compression utility
 
 License:        GPLv3+ and GFDL
 URL:            https://www.gnu.org/software/gzip
 Source0:        https://ftp.gnu.org/gnu/gzip/gzip-%{version}.tar.xz
 
-Patch0:         gzexe.patch
 Patch9000:      fix-verbose-disable.patch
 Patch9100:      performance-neoncrc32-and-prfm.patch
 
@@ -58,6 +57,9 @@ make check
 %{_mandir}/man1/*
 
 %changelog
+* Tue Dec 28 2021 shangyibin<shangyibin1@huawei.com> - 1.11-1
+- upgrade to version 1.11
+
 * Thu Nov 09 2021 tianwei<tianwei12@huawei.com> - 1.10-2
 - Type:bugfix
 - ID:NA
