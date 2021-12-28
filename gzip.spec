@@ -1,6 +1,6 @@
 Name:           gzip
 Version:        1.10
-Release:        1
+Release:        2
 Summary:        A data compression utility
 
 License:        GPLv3+ and GFDL
@@ -11,7 +11,7 @@ Patch0:         gzexe.patch
 Patch9000:      fix-verbose-disable.patch
 Patch9100:      performance-neoncrc32-and-prfm.patch
 
-BuildRequires:  gcc texinfo
+BuildRequires:  gcc texinfo less
 Requires:       coreutils
 Conflicts:      filesystem < 3
 Provides:       /bin/gunzip
@@ -58,6 +58,12 @@ make check
 %{_mandir}/man1/*
 
 %changelog
+* Thu Nov 09 2021 tianwei<tianwei12@huawei.com> - 1.10-2
+- Type:bugfix
+- ID:NA
+- SUG:NA
+- DESC: fix testsuite fail
+
 * Fri Apr 24 2020 BruceGW <gyl93216@163.com> - 1.10-1
 * update upstream to 1.10
 
