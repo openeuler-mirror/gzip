@@ -1,14 +1,19 @@
 Name:           gzip
 Version:        1.11
-Release:        2
+Release:        3
 Summary:        A data compression utility
 
 License:        GPLv3
 URL:            https://www.gnu.org/software/gzip
 Source0:        https://ftp.gnu.org/gnu/gzip/gzip-%{version}.tar.xz
 
+Patch6000:	gzip-l-now-outputs-accurate-size.patch
+Patch6001:	doc-document-gzip-l-change.patch
+Patch6002:	zdiff-fix-arg-handling-bug.patch
+Patch6003:	zdiff-fix-another-arg-handling-bug.patch
+
 Patch9000:      fix-verbose-disable.patch
-Patch9100:      performance-neoncrc32-and-prfm.patch
+Patch9001:      performance-neoncrc32-and-prfm.patch
 
 BuildRequires:  gcc texinfo less autoconf automake
 Requires:       coreutils
@@ -58,6 +63,12 @@ make check
 %{_mandir}/man1/*
 
 %changelog
+* Wed Mar 23 2022 Lv Ying<lvying6@huawei.com> - 1.11-3
+- Type:bugfix
+- ID:NA
+- SUG:NA
+- DESC:backport bugfix patches from upstream
+
 * Wed Mar 23 2022 Lv Ying<lvying6@huawei.com> - 1.11-2
 - Type:bugfix
 - ID:NA
