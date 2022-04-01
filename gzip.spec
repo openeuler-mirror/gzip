@@ -1,16 +1,21 @@
 Name:           gzip
 Version:        1.11
-Release:        1
+Release:        2
 Summary:        A data compression utility
 
-License:        GPLv3+ and GFDL
+License:        GPLv3
 URL:            https://www.gnu.org/software/gzip
 Source0:        https://ftp.gnu.org/gnu/gzip/gzip-%{version}.tar.xz
 
-Patch9000:      fix-verbose-disable.patch
-Patch9100:      performance-neoncrc32-and-prfm.patch
+Patch6000:      gzip-l-now-outputs-accurate-size.patch
+Patch6001:      doc-document-gzip-l-change.patch
+Patch6002:      zdiff-fix-arg-handling-bug.patch
+Patch6003:      zdiff-fix-another-arg-handling-bug.patch
 
-BuildRequires:  gcc texinfo less
+Patch9000:      fix-verbose-disable.patch
+Patch9001:      performance-neoncrc32-and-prfm.patch
+
+BuildRequires:  gcc texinfo less autoconf automake
 Requires:       coreutils
 Conflicts:      filesystem < 3
 Provides:       /bin/gunzip
@@ -32,6 +37,7 @@ has the suffix .gz.
 %ifarch aarch64
 export CFLAGS="${CFLAGS:-%optflags} -march=armv8-a+crc"
 %endif
+autoreconf
 %configure
 %make_build
 
@@ -57,6 +63,9 @@ make check
 %{_mandir}/man1/*
 
 %changelog
+* Fri Apr 01 2022 tianwei<tianwei12@h-partners.com> - 1.11-2
+- backport bugfix patches from upstream and fix build failure in OBS
+
 * Tue Dec 28 2021 shangyibin<shangyibin1@huawei.com> - 1.11-1
 - upgrade to version 1.11
 

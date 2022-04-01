@@ -1,0 +1,43 @@
+From 9cd9a789c186bfe6594c0aed8ba34c9e3d9d9292 Mon Sep 17 00:00:00 2001
+From: Paul Eggert <eggert@cs.ucla.edu>
+Date: Mon, 7 Mar 2022 09:38:08 -0800
+Subject: [PATCH] zdiff: fix arg handling bug
+
+Problem reported by Lv Ying (Bug#54291).
+* zdiff.in (escape): Handle args like '-C 5'.
+---
+ zdiff.in | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/zdiff.in b/zdiff.in
+index a1325f2..a72d08d 100644
+--- a/zdiff.in
++++ b/zdiff.in
+@@ -49,14 +49,23 @@ escape='
+ '
+ 
+ while :; do
++  argdone=:
+   case $1 in
+   --h*) printf '%s\n' "$usage"   || exit 2; exit;;
+   --v*) printf '%s\n' "$version" || exit 2; exit;;
+   --) shift; break;;
+-  -*\'*) cmp="$cmp '"`printf '%sX\n' "$1" | sed "$escape"`;;
++  -*\'*) argdone=false arg=$1;;
++  -[CDFISUWXx])
++    cmp="$cmp $1"
++    case ${2?} in
++    -*\'*) argdone=false arg=$2;;
++    *) cmp="$cmp '$2'";;
++    esac
++    shift;;
+   -?*) cmp="$cmp '$1'";;
+   *) break;;
+   esac
++  $argdone || cmp="$cmp '"`printf '%sX\n' "$arg" | sed "$escape"`
+   shift
+ done
+ cmp="$cmp --"
+-- 
+2.27.0
+
