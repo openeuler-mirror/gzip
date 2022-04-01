@@ -1,0 +1,73 @@
+From 5ec23f714e98407a6de25f6f40f125cc87b12908 Mon Sep 17 00:00:00 2001
+From: Paul Eggert <eggert@cs.ucla.edu>
+Date: Wed, 15 Dec 2021 15:04:27 -0800
+Subject: [PATCH] doc: document gzip -l change
+
+* NEWS, doc/gzip.texi (Invoking gzip), gzip.1 (gunzip):
+Document recent change.
+---
+ doc/gzip.texi | 18 ------------------
+ gzip.1        | 11 -----------
+ 2 files changed, 29 deletions(-)
+
+diff --git a/doc/gzip.texi b/doc/gzip.texi
+index abceb58..48b3485 100644
+--- a/doc/gzip.texi
++++ b/doc/gzip.texi
+@@ -300,14 +300,6 @@ ratio: compression ratio (0.0% if unknown)
+ uncompressed_name: name of the uncompressed file
+ @end example
+ 
+-The uncompressed size is given as @minus{}1 for files not in @command{gzip}
+-format, such as compressed @samp{.Z} files.  To get the uncompressed size for
+-such a file, you can use:
+-
+-@example
+-zcat file.Z | wc -c
+-@end example
+-
+ In combination with the @option{--verbose} option, the following fields are also
+ displayed:
+ 
+@@ -323,16 +315,6 @@ With @option{--verbose}, the size totals and compression ratio for all files
+ is also displayed, unless some sizes are unknown.  With @option{--quiet},
+ the title and totals lines are not displayed.
+ 
+-The @command{gzip} format represents the input size modulo
+-@math{2^32}, so the uncompressed size and compression ratio are listed
+-incorrectly for uncompressed files 4 GiB and larger.  To work around
+-this problem, you can use the following command to discover a large
+-uncompressed file's true size:
+-
+-@example
+-zcat file.gz | wc -c
+-@end example
+-
+ @item --license
+ @itemx -L
+ Display the @command{gzip} license then quit.
+diff --git a/gzip.1 b/gzip.1
+index 0ae9765..65dea22 100644
+--- a/gzip.1
++++ b/gzip.1
+@@ -492,17 +492,6 @@ detects that there is extra trailing garbage after the compressed data
+ and emits a warning by default.  You can use the --quiet option to
+ suppress the warning.
+ .SH BUGS
+-The gzip format represents the input size modulo 2^32, so the
+---list option reports incorrect uncompressed sizes and compression
+-ratios for uncompressed files 4 GB and larger.  To work around this
+-problem, you can use the following command to discover a large
+-uncompressed file's true size:
+-
+-      zcat file.gz | wc -c
+-
+-The --list option reports sizes as -1 and crc as ffffffff if the
+-compressed file is on a non seekable media.
+-
+ In some rare cases, the --best option gives worse compression than
+ the default compression level (-6). On some highly redundant files,
+ .B compress
+-- 
+2.27.0
+
