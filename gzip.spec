@@ -1,9 +1,9 @@
 Name:           gzip
 Version:        1.10
-Release:        1
+Release:        2
 Summary:        A data compression utility
 
-License:        GPLv3+ and GFDL
+License:        GPLv3+
 URL:            https://www.gnu.org/software/gzip
 Source0:        https://ftp.gnu.org/gnu/gzip/gzip-%{version}.tar.xz
 
@@ -58,8 +58,11 @@ make check
 %{_mandir}/man1/*
 
 %changelog
+* Thu Apr 14 2022 renhongxun <renhongxun@h-partners.com> - 1.10-2
+- update license from GPLv3+,GFDL to GPLv3+
+
 * Fri Apr 24 2020 BruceGW <gyl93216@163.com> - 1.10-1
-* update upstream to 1.10
+- update upstream to 1.10
 
 * Fri Jan 17 2020 openEuler Buildteam <buildteam@openeuler.org> - 1.9-18
 - Type:performance improve
