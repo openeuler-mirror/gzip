@@ -1,6 +1,6 @@
 Name:           gzip
 Version:        1.11
-Release:        2
+Release:        3
 Summary:        A data compression utility
 
 License:        GPLv3
@@ -14,6 +14,10 @@ Patch6003:      zdiff-fix-another-arg-handling-bug.patch
 
 Patch9000:      fix-verbose-disable.patch
 Patch9001:      performance-neoncrc32-and-prfm.patch
+
+Patch6004:      backport-0001-CVE-2022-1271.patch
+Patch6005:      backport-0002-CVE-2022-1271.patch
+Patch6006:      backport-0003-CVE-2022-1271.patch
 
 BuildRequires:  gcc texinfo less autoconf automake
 Requires:       coreutils
@@ -63,6 +67,9 @@ make check
 %{_mandir}/man1/*
 
 %changelog
+* Wed Apr 20 2022 shixuantong <shixuantong@h-partners.com> - 1.11-3
+- fix CVE-2022-1271
+
 * Fri Apr 01 2022 tianwei<tianwei12@h-partners.com> - 1.11-2
 - backport bugfix patches from upstream and fix build failure in OBS
 
@@ -76,7 +83,7 @@ make check
 - DESC: fix testsuite fail
 
 * Fri Apr 24 2020 BruceGW <gyl93216@163.com> - 1.10-1
-* update upstream to 1.10
+- update upstream to 1.10
 
 * Fri Jan 17 2020 openEuler Buildteam <buildteam@openeuler.org> - 1.9-18
 - Type:performance improve
