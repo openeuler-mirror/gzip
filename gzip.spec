@@ -1,6 +1,6 @@
 Name:           gzip
 Version:        1.10
-Release:        2
+Release:        3
 Summary:        A data compression utility
 
 License:        GPLv3+
@@ -11,7 +11,11 @@ Patch0:         gzexe.patch
 Patch9000:      fix-verbose-disable.patch
 Patch9100:      performance-neoncrc32-and-prfm.patch
 
-BuildRequires:  gcc texinfo
+Patch6000:      backport-0001-CVE-2022-1271.patch
+Patch6001:      backport-0002-CVE-2022-1271.patch
+Patch6002:      backport-0003-CVE-2022-1271.patch
+
+BuildRequires:  gcc texinfo automake autoconf
 Requires:       coreutils
 Conflicts:      filesystem < 3
 Provides:       /bin/gunzip
@@ -33,6 +37,7 @@ has the suffix .gz.
 %ifarch aarch64
 export CFLAGS="${CFLAGS:-%optflags} -march=armv8-a+crc"
 %endif
+autoreconf
 %configure
 %make_build
 
@@ -58,6 +63,9 @@ make check
 %{_mandir}/man1/*
 
 %changelog
+* Wed Apr 20 2022 shixuantong <shixuantong@h-partners.com> - 1.10-3
+- fix CVE-2022-1271
+
 * Thu Apr 14 2022 renhongxun <renhongxun@h-partners.com> - 1.10-2
 - update license from GPLv3+,GFDL to GPLv3+
 
