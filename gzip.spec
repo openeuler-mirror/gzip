@@ -1,6 +1,6 @@
 Name:           gzip
 Version:        1.11
-Release:        3
+Release:        4
 Summary:        A data compression utility
 
 License:        GPLv3
@@ -14,6 +14,10 @@ Patch6003:	zdiff-fix-another-arg-handling-bug.patch
 
 Patch9000:      fix-verbose-disable.patch
 Patch9001:      performance-neoncrc32-and-prfm.patch
+
+Patch6004:      backport-0001-CVE-2022-1271.patch
+Patch6005:      backport-0002-CVE-2022-1271.patch
+Patch6006:      backport-0003-CVE-2022-1271.patch
 
 BuildRequires:  gcc texinfo less autoconf automake
 Requires:       coreutils
@@ -63,6 +67,12 @@ make check
 %{_mandir}/man1/*
 
 %changelog
+* Fri Apr 22 2022 shixuantong <shixuantong@h-partners.com> - 1.11-4
+- Type:cves
+- ID:CVE-2022-1271
+- SUG:NA
+- DESC:fix CVE-2022-1271
+
 * Wed Mar 23 2022 Lv Ying<lvying6@huawei.com> - 1.11-3
 - Type:bugfix
 - ID:NA
