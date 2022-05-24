@@ -1,6 +1,6 @@
 Name:           gzip
 Version:        1.11
-Release:        3
+Release:        4
 Summary:        A data compression utility
 
 License:        GPLv3
@@ -67,6 +67,9 @@ make check
 %{_mandir}/man1/*
 
 %changelog
+* Tue May 24 2022 loong_C <loong_c@yeah.net> - 1.11-4
+- fix changelog date
+
 * Wed Apr 20 2022 shixuantong <shixuantong@h-partners.com> - 1.11-3
 - fix CVE-2022-1271
 
@@ -76,7 +79,7 @@ make check
 * Tue Dec 28 2021 shangyibin<shangyibin1@huawei.com> - 1.11-1
 - upgrade to version 1.11
 
-* Thu Nov 09 2021 tianwei<tianwei12@huawei.com> - 1.10-2
+* Tue Nov 09 2021 tianwei<tianwei12@huawei.com> - 1.10-2
 - Type:bugfix
 - ID:NA
 - SUG:NA
